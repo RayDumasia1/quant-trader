@@ -7,9 +7,9 @@ __pycache__/
 *.duckdb
 *.duckdb.wal
 artifacts/
-data/
-datasets/
-raw/
+/data/
+/datasets/
+/raw/
 reports/generated/
 credentials*
 secrets*
@@ -23,3 +23,14 @@ secrets*
 build/
 dist/
 *.egg-info/
+api_key*
+api-key*
+access_token*
+*.csv
+*.parquet
+*.arrow
+*.feather
+*.h5
+*.hdf5
+*.sqlite
+*.db
