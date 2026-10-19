@@ -1,0 +1,18 @@
+[project]
+name = "quant-trader"
+version = "0.1.0"
+description = "Research foundations for a modular paper-first trading platform"
+requires-python = ">=3.14"
+dependencies = [
+  "duckdb==1.5.5",
+  "pandas==3.0.5",
+  "numpy==2.5.1",
+  "yfinance==1.5.2",
+  "requests==2.34.2",
+]
+
+[project.scripts]
+quant-trader = "quant_trader.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["quant_trader*"]

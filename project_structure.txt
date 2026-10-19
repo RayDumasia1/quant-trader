@@ -1,0 +1,17 @@
+build_index_membership.py
+compute_market_regime.py
+compute_scores.py
+count_regime_epides.py
+create_schema.py
+defensive_exclude_dominant_espides.py
+percentile_check.py
+populate_signal_outcomes.py
+project_structure.txt
+pull_price_history.py
+reconcile_remaining_renames.py
+reconcile_renamed_tickers.py
+regime_split_risk_quality.py
+retry_failed_tickers.py
+test_duckdb.py
+test_fmp_endpoints.py
+trading.duckdb
