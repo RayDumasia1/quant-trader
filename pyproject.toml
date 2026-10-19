@@ -1,6 +1,6 @@
 [project]
 name = "quant-trader"
-version = "0.1.0"
+version = "0.1.1"
 description = "Research foundations for a modular paper-first trading platform"
 requires-python = ">=3.14"
 dependencies = [
@@ -9,6 +9,7 @@ dependencies = [
   "numpy==2.5.1",
   "yfinance==1.5.2",
   "requests==2.34.2",
+  "pandas_market_calendars==5.5.0",
 ]
 
 [project.scripts]

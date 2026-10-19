@@ -1,0 +1,21 @@
+{
+  "strategy_id": "ndx-seven-system",
+  "version": "1.1.0-research",
+  "assumption_status": "Proposed research assumptions; no optimization or performance validation",
+  "trend_window": 200,
+  "fast_window": 50,
+  "center_window": 20,
+  "band_window": 20,
+  "band_std": 2.0,
+  "cooldown_sessions": 1,
+  "conflict_policy": "opposing_votes_flat",
+  "modules": [
+    {"system_id": "momentum_long", "instrument": "TQQQ", "direction": 1, "rule": "momentum_long", "max_hold": 60, "extension": 0.10},
+    {"system_id": "mean_reversion_long_1", "instrument": "TQQQ", "direction": 1, "rule": "dip_center", "max_hold": 10, "extension": -0.03},
+    {"system_id": "mean_reversion_long_2", "instrument": "TQQQ", "direction": 1, "rule": "dip_band", "max_hold": 10, "extension": 0.0},
+    {"system_id": "mean_reversion_long_3", "instrument": "TQQQ", "direction": 1, "rule": "dip_fast", "max_hold": 15, "extension": -0.05},
+    {"system_id": "momentum_short_1", "instrument": "SQQQ", "direction": -1, "rule": "momentum_short", "max_hold": 30, "extension": -0.10},
+    {"system_id": "momentum_short_2", "instrument": "SQQQ", "direction": -1, "rule": "breakdown_band", "max_hold": 10, "extension": 0.0},
+    {"system_id": "mean_reversion_short", "instrument": "SQQQ", "direction": -1, "rule": "rally_band", "max_hold": 10, "extension": 0.03}
+  ]
+}

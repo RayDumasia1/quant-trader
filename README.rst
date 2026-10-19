@@ -1,9 +1,20 @@
 Quant Trader foundations
 =======================
 
+V1.1 additions
+--------------
+
+The reviewed foundation is preserved. The seven-system research specification,
+deterministic strategy contract and immutable historical-ingestion adapter are
+documented in ``docs/strategy-v1.1.rst``, ``docs/interface-v1.1.rst`` and
+``docs/data-v1.1.rst``. Initial rules live in
+``configs/strategies/tqqq_sqqq_v1.1.json``. These parameters have not been
+optimized or validated for profitability. There is no portfolio simulation
+or broker integration. Review the V1.1 completion report before proceeding.
+
 The existing stock-research commands remain available. Reusable calculations
-and a read-only repository now live in ``quant_trader``. No broker adapter,
-strategy trading rules or order-submission path is implemented.
+and a read-only repository now live in ``quant_trader``. V1.1 adds a separate
+research strategy; no broker adapter or order-submission path is implemented.
 
 Run from this directory using the existing Windows environment::
 
@@ -21,7 +32,8 @@ Dependencies
 ``pyproject.toml`` pins direct dependencies to the environment inspected during
 the assessment. ``requirements.lock.txt`` records all installed distributions
 on Windows/Python 3.14.7. It is an environment snapshot, not a portable,
-hash-verified resolver lock. No packages were installed or upgraded.
+hash-verified resolver lock. V1.1 adds pandas_market_calendars 5.5.0 and its
+calendar dependencies; legacy direct dependency versions are preserved.
 
 Research compatibility and data safety
 --------------------------------------
@@ -51,12 +63,11 @@ verification. Reports fingerprint data but do not retain immutable snapshots.
 Next review gate
 ----------------
 
-Supply the seven systems' exact inputs, lookbacks, entries, exits, timing,
-priority, re-entry rules and state transitions. Specify the historical start
-date, required NDX definition/provider and whether simultaneous opposing
-TQQQ/SQQQ intents are allowed. Then approve an acquisition plan for missing
-assets into separate versioned storage. No downloads or existing-record
-repairs are performed by these foundations.
+Review the proposed V1.1 rules and data-readiness report before approving
+historical portfolio simulation. Public requests for all four assets were
+blocked with HTTP 429; no new datasets were populated. An approved source for
+NDX and verifiable ETF execution prices/corporate actions is still required.
+Existing-record repairs and broker integration remain outside this milestone.
 
 The percentile weighting issue, monthly-membership uncertainty, missing prices
 and mixed-provider adjustment concerns remain documented research limitations.
