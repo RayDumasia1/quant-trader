@@ -1,6 +1,17 @@
 Quant Trader foundations
 =======================
 
+Targeted V1.1 QC
+---------------
+
+Review ``docs/qc-v1.1-report.rst``, ``docs/portfolio-risk-v1.1-qc.rst`` and
+``docs/imports-v1.1-qc.rst`` for the current diagnostics, typed sizing contracts,
+strict CSV/provider import formats and actual readiness limits. The 200-day
+baseline and original rule parameters are preserved. A 250-day trend is only
+a documented future variant. A complete real FRED 2024 NDX slice is validated;
+full-period NDX and ETF execution readiness remain blocked. No full portfolio
+backtest or broker integration is implemented.
+
 V1.1 additions
 --------------
 

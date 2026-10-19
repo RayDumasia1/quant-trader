@@ -67,6 +67,21 @@ class Intent:
 
 
 @dataclass(frozen=True)
+class ModuleDiagnostic:
+    system_id: str
+    instrument: str
+    state_before: ModuleState
+    state_after: ModuleState
+    entry_condition: bool | None
+    exit_condition: bool | None
+    predicate_values: tuple[tuple[str, bool], ...]
+    requested_direction: int | None
+    accepted_direction: int | None
+    attribution_fraction: float | None
+    reason: str
+
+
+@dataclass(frozen=True)
 class Signal:
     strategy_id: str
     version: str
@@ -82,6 +97,7 @@ class Signal:
     reason: str
     state: StrategyState
     diagnostics: tuple[tuple[str, float], ...] = ()
+    module_diagnostics: tuple[ModuleDiagnostic, ...] = ()
 
 
 class Strategy(Protocol):

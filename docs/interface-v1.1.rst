@@ -27,6 +27,13 @@ indicator values and the next immutable signal state. Serialize with
 when a run ledger is implemented. Persistent strategy state and the run ledger
 are outside V1.1.
 
+The targeted QC extension adds module_diagnostics: seven immutable
+ModuleDiagnostic objects with predicate availability, before/after state,
+requested and accepted directions, nominal attribution and suppression reasons.
+The existing Signal fields and positional construction remain compatible.
+Portfolio contracts are specified independently in portfolio-risk-v1.1-qc.rst;
+no concrete position sizer or execution algorithm is implemented.
+
 Status ready means signal evaluation succeeded. It says nothing about ETF
 dataset readiness, account permission, sizing, broker position or an order
 fill. Status blocked or warmup returns no actionable exposure and unchanged

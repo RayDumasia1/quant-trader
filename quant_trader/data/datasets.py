@@ -16,10 +16,16 @@ class DatasetStore:
     def __init__(self, root='data/v1.1'):
         self.root = Path(root)
 
-    def put(self, *, raw, bars, actions, calendar, provenance, validation):
+    def put(self, *, raw, bars, actions, calendar, provenance, validation, source_files=None):
         files = {'raw.json': raw, 'bars.json': canonical(bars),
                  'actions.json': canonical(actions), 'calendar.json': canonical(calendar),
                  'validation.json': canonical(validation)}
+        if source_files:
+            allowed = {'source_prices.csv','source_splits.csv','source_distributions.csv','source_metadata.json'}
+            if not set(source_files) <= allowed: raise ValueError('Unexpected source filenames')
+            files.update(source_files)
+            files['splits.json'] = canonical([row for row in actions if row['kind']=='splits'])
+            files['distributions.json'] = canonical([row for row in actions if row['kind']!='splits'])
         identity = {'schema_version': '1.1', 'provenance': provenance,
                     'files': {name: checksum(content) for name, content in files.items()}}
         dataset_id = checksum(canonical(identity))
@@ -47,7 +53,9 @@ class DatasetStore:
         if manifest['dataset_id'] != dataset_id or checksum(canonical(identity)) != dataset_id:
             raise ValueError('Dataset identity mismatch')
         for name, expected in manifest['files'].items():
-            if name not in {'raw.json','bars.json','actions.json','calendar.json','validation.json'}:
+            if name not in {'raw.json','bars.json','actions.json','calendar.json','validation.json',
+                            'source_prices.csv','source_splits.csv','source_distributions.csv','source_metadata.json',
+                            'splits.json','distributions.json'}:
                 raise ValueError('Unexpected bundle filename')
             if checksum((directory / name).read_bytes()) != expected:
                 raise ValueError('Dataset checksum mismatch: ' + name)

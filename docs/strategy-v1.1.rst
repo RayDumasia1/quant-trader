@@ -10,6 +10,29 @@ validated. This is a proposed strategy specification, not an asserted recovery
 of an external or proprietary seven-system strategy. Changes require a new
 version and parameter fingerprint.
 
+Targeted V1.1 QC review
+-----------------------
+
+The 200-session SMA remains the trend baseline and the default warm-up remains
+201 completed sessions. A 250-session SMA is a FUTURE versioned research
+variant requiring 251-session warm-up, a new strategy version/configuration,
+separate dataset/run identifiers and prospective evaluation criteria. It has
+not been run, selected or optimized. No 200/250 performance comparison is made.
+
+Entry, exit, holding, cooldown and conflict predicates are unchanged by QC.
+Signal.module_diagnostics now supplies all seven modules' before/after state,
+entry/exit booleans, named predicate flags, requested/accepted direction,
+suppression reason and nominal attribution_fraction. Unavailable predicates
+and attribution are None, not false/zero. A valid flat has zero accepted votes.
+Same-side overlap divides nominal attribution, never multiplies aggregate
+direction. These fractions are not position sizes or realized contributions.
+
+Targeted fixtures exercise all three mean-reversion long systems entering on
+the same session, subsequent independent holds, and sequential bull/bear
+reversals with opposing votes, timeouts and full-session cooldowns. Controlled
+indicator fixtures are state-machine tests, not investment simulations.
+Signals still use only bars available by their timezone-aware decision time.
+
 Inputs and formulas
 -------------------
 

@@ -8,7 +8,7 @@ import pandas as pd
 
 from quant_trader.data.calendar import latest_session, schedule, utc_timestamp
 from quant_trader.data.datasets import canonical, checksum
-from quant_trader.strategies.base import Intent, ModuleState, Signal, StrategyState
+from quant_trader.strategies.base import Intent, ModuleDiagnostic, ModuleState, Signal, StrategyState
 
 RULES = {'momentum_long': ('TQQQ',1), 'dip_center':('TQQQ',1),
          'dip_band':('TQQQ',1), 'dip_fast':('TQQQ',1),
@@ -140,7 +140,10 @@ class SevenSystemStrategy:
         latest = latest_session(as_of)
         def blocked(reason, status='blocked'):
             return Signal(self.strategy_id,self.version,self.parameter_id,snapshot.dataset_id,
-                          as_of.isoformat(),None,latest['session'],None,status,(),None,reason,state)
+                          as_of.isoformat(),None,latest['session'],None,status,(),None,reason,state,
+                          module_diagnostics=tuple(ModuleDiagnostic(rule.system_id,rule.instrument,
+                              module,module,None,None,(),None,None,None,reason)
+                              for rule,module in zip(self.rules,state.modules)))
         if not snapshot.dataset_id: return blocked('missing_dataset_identifier')
         bars = snapshot.bars
         if not bars: return blocked('missing_ndx_data')
@@ -163,18 +166,41 @@ class SevenSystemStrategy:
         if len(relevant) < self.lookback: return blocked('indicator_warmup', 'warmup')
         frame = self.features([bar.close for bar in relevant])
         current, previous = frame.iloc[-1].to_dict(), frame.iloc[-2].to_dict()
-        new_states, intents = [], []
+        new_states, intents, conditions = [], [], []
         for rule, module in zip(self.rules,state.modules):
             entry, exit_ = self.conditions(rule,current,previous)
             new_state, intent = self.transition(rule,module,session=latest['session'],entry=entry,exit_=exit_)
             new_states.append(new_state); intents.append(intent)
+            conditions.append((entry,exit_))
         direction, reason = aggregate(intents)
         later = schedule(latest['session'], (as_of + pd.Timedelta(days=14)).date())
         next_open = next(row['open_at'] for row in later if row['session'] > latest['session'])
         if utc_timestamp(next_open) <= as_of:
             return blocked('missed_next_session_open')
         available_at = max((utc_timestamp(bar.available_at) for bar in relevant)).isoformat()
+        accepted = sum(intent.direction == direction for intent in intents) if direction else 0
+        attribution = []
+        for rule,before,after,intent,(entry,exit_) in zip(self.rules,state.modules,new_states,intents,conditions):
+            c,p = current,previous
+            checks = {'bull_gate':c['close']>c['trend'], 'bear_gate':c['close']<c['trend'],
+                      'close_below_fast':c['close']<c['fast'], 'close_above_fast':c['close']>c['fast'],
+                      'at_or_above_center':c['close']>=c['center'], 'at_or_below_center':c['close']<=c['center'],
+                      'below_lower_band':c['close']<c['lower'], 'above_upper_band':c['close']>c['upper'],
+                      'cross_above_center':p['close']<=p['center'] and c['close']>c['center'],
+                      'cross_below_center':p['close']>=p['center'] and c['close']<c['center'],
+                      'cross_below_lower':p['close']>=p['lower'] and c['close']<c['lower'],
+                      'fast_above_trend':c['fast']>c['trend'], 'fast_below_trend':c['fast']<c['trend'],
+                      'extension_center_ge_threshold':c['ext_center']>=rule.extension,
+                      'extension_center_le_threshold':c['ext_center']<=rule.extension,
+                      'extension_fast_le_threshold':c['ext_fast']<=rule.extension,
+                      'holding_limit_reached':before.active and before.holding_sessions+1>=rule.max_hold,
+                      'cooldown_blocks_entry':not before.active and before.cooldown_remaining>0}
+            contributes = bool(direction and intent.direction==direction)
+            attribution.append(ModuleDiagnostic(rule.system_id,rule.instrument,before,after,entry,exit_,
+                tuple(sorted((name,bool(value)) for name,value in checks.items())),intent.direction,
+                intent.direction if contributes else 0,1/accepted if contributes else 0.0,
+                'suppressed_by_conflict' if not direction and intent.direction else intent.reason))
         return Signal(self.strategy_id,self.version,self.parameter_id,snapshot.dataset_id,
                       as_of.isoformat(),available_at,latest['session'],next_open,'ready',tuple(intents),
                       direction,reason,StrategyState(self.parameter_id,tuple(new_states),latest['session']),
-                      tuple(sorted(current.items())))
+                      tuple(sorted(current.items())),tuple(attribution))
